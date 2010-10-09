@@ -24,7 +24,7 @@
   <source path='shared'/>
 
   <!--  For faster compile time - comment the line below for production! -->
-  <set-property name="user.agent" value="safari"/>
+  <!--  <set-property name="user.agent" value="safari"/> -->
   	
 
 </module>

@@ -106,12 +106,20 @@ public class GwtPhoenix implements EntryPoint {
                                 sleepTime = 1000 / 60 - msPerFrame;
                                 
                                 phoenix.cycles = -phoenix.cyclesPerInterrupt;
-                                if (sleepTime > 0) {
-                                    phoenix.setFrameSkip(1);
-                                    timer.schedule((int) sleepTime);
-                                } else {
+                                
+                                if (phoenix.getFramesPerSecond() > 60) {
+                                    int frameSkip = phoenix.getFrameSkip();
+                                    phoenix.setFrameSkip(frameSkip > 1 ? frameSkip -1 : 1);
+                                }
+                                
+                                if (phoenix.getFramesPerSecond() < 60) {
                                     int frameSkip = phoenix.getFrameSkip();
                                     phoenix.setFrameSkip(frameSkip < 5 ? frameSkip + 1 : 5);
+                                }
+                                
+                                if (sleepTime > 0) {
+                                    timer.schedule((int) sleepTime);
+                                } else {
                                     timer.schedule(1);
                                 }
                                 break;

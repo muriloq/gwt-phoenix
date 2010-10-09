@@ -605,5 +605,10 @@ public class Phoenix extends i8080 {
     public int getFrameSkip() {
         return frameSkip;
     }
+
+
+    public float getFramesPerSecond() {
+        return framesPerSecond;
+    }
 	
 }
