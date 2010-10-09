@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+  
+  <!-- Servlets -->
+  <servlet>
+    <servlet-name>phoenixServlet</servlet-name>
+    <servlet-class>com.muriloq.gwt.phoenix.server.PhoenixServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>phoenixServlet</servlet-name>
+    <url-pattern>/gwtphoenix/phoenix</url-pattern>
+  </servlet-mapping>
+  
+  <!-- Default page to serve -->
+  <welcome-file-list>
+    <welcome-file>GwtPhoenix.html</welcome-file>
+  </welcome-file-list>
+
+</web-app>

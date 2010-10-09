@@ -1,0 +1,11 @@
+/** Add css rules here for your application. */
+body{
+	background:black; !important
+}
+
+/** Example rules used by the template application (remove for your app) */
+p,h1,h2,h3 {
+  color: #FFF;
+  font-family: monospace;
+}
+

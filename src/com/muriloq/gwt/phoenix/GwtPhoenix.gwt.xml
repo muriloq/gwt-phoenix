@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to='gwtphoenix'>
+
+  <!-- Inherit the core Web Toolkit stuff.                        -->
+  <inherits name='com.google.gwt.user.User'/>
+
+  <!-- Inherit the default GWT style sheet.  You can change       -->
+  <!-- the theme of your GWT application by uncommenting          -->
+  <!-- any one of the following lines.                            -->
+  <!-- <inherits name='com.google.gwt.user.theme.standard.Standard'/>  -->
+  <!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
+  <inherits name='com.google.gwt.user.theme.dark.Dark'/>
+
+  <!-- Other module inherits                                      -->
+  <!--  <inherits name='com.allen_sauer.gwt.voices.gwt-voices'/>  -->
+  <!--  <inherits name='com.google.gwt.widgetideas.GWTCanvas'/>   -->
+  <inherits name='gwt.g2d.g2d'/>
+         
+  <!-- Specify the app entry point class.                         -->
+  <entry-point class='com.muriloq.gwt.phoenix.client.GwtPhoenix'/>
+
+  <!-- Specify the paths for translatable code                    -->
+  <source path='client'/>
+  <source path='shared'/>
+
+  <!--  For faster compile time - comment the line below for production! -->
+  <set-property name="user.agent" value="safari"/>
+  	
+
+</module>
