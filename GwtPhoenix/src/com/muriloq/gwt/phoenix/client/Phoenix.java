@@ -9,6 +9,7 @@ import gwt.g2d.client.graphics.canvas.CanvasElement;
 import gwt.g2d.client.graphics.canvas.ImageDataAdapter;
 
 import com.allen_sauer.gwt.voices.client.Sound;
+import com.allen_sauer.gwt.voices.client.Sound.LoadState;
 import com.allen_sauer.gwt.voices.client.SoundController;
 import com.google.gwt.event.dom.client.KeyCodes;
 
@@ -128,7 +129,7 @@ public class Phoenix extends i8080 {
     
     private boolean autoFrameSkip=true;
     private boolean realSpeed=true;
-    private boolean mute=true;
+    private boolean mute=false;
     private int frameSkip = 1;
     public  long timeOfLastFrameInterrupt = 0;
     private long  timeNow;
@@ -337,29 +338,28 @@ public class Phoenix extends i8080 {
 
     
     public void initSFX() {
-        // Sound Effects loading
-        
         soundController = new SoundController();
-        laserSFX = soundController.createSound(Sound.MIME_TYPE_AUDIO_BASIC, "laser.ogg");
-        laserSFX.play();
-        laserSFX.stop();
+        this.laserSFX = loadSFX("laser"); 
+        this.explosionSFX = loadSFX("explo");
+        this.blowSFX = loadSFX("blow");
+        this.shieldSFX = loadSFX("shield");
+        this.hitSFX = loadSFX("hit");
+    }
 
-        explosionSFX = soundController.createSound(Sound.MIME_TYPE_AUDIO_BASIC, "explo.ogg"); 
-        explosionSFX.play();
-        explosionSFX.stop();
 
-        blowSFX = soundController.createSound(Sound.MIME_TYPE_AUDIO_BASIC, "blow.ogg");
-        blowSFX.play();
-        blowSFX.stop();
-
-        shieldSFX = soundController.createSound(Sound.MIME_TYPE_AUDIO_BASIC, "shield.ogg"); 
-        shieldSFX.play();
-        shieldSFX.stop();
-
-        hitSFX = soundController.createSound(Sound.MIME_TYPE_AUDIO_BASIC, "hit.ogg");
-        hitSFX.play();
-        hitSFX.stop();
-
+    public Sound loadSFX(String name) {
+        Sound sfx = soundController.createSound(Sound.MIME_TYPE_AUDIO_OGG_VORBIS, name+".ogg");
+        sfx.play();
+        if (LoadState.LOAD_STATE_NOT_SUPPORTED == sfx.getLoadState()){
+            sfx = soundController.createSound(Sound.MIME_TYPE_AUDIO_MPEG_MP3, name+".mp3");
+            sfx.play();
+            if (LoadState.LOAD_STATE_NOT_SUPPORTED == sfx.getLoadState()){
+                sfx = soundController.createSound(Sound.MIME_TYPE_AUDIO_WAV_PCM, name+".wav");
+                sfx.play();
+            }
+        }
+        System.out.println("Loaded "+sfx.getMimeType()+", "+sfx.getSoundType()+", "+sfx.getLoadState());
+        return sfx;
     }
 
     // The Hi Score is BCD (Binary Coded Decimal).
@@ -604,7 +604,7 @@ public class Phoenix extends i8080 {
         case '2':  	gameControl[2]=1-down;    break; // Start 2
         case 32 :  	gameControl[4]=1-down;    break; // Fire
         case 'a': case 'A': if (down==0) this.autoFrameSkip = !autoFrameSkip; break;   // toggle auto frame skip
-        case 's': case 'S': if (down==0) this.realSpeed = !realSpeed; break;   // toggle speed limiter
+        case 's': case 'S': if (down==0) this.realSpeed = !realSpeed; setFrameSkip(1); break;   // toggle speed limiter
         case 'm': case 'M': if (down==0) this.mute = !mute; break;   // toggle speed limiter
         case KeyCodes.KEY_RIGHT:   gameControl[5]=1-down;   break;   // Right
         case KeyCodes.KEY_LEFT:   	 gameControl[6]=1-down;  break;  // Left
