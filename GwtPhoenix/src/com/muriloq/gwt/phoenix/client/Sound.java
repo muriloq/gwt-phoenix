@@ -8,7 +8,6 @@ package com.muriloq.gwt.phoenix.client;
  * Juergen Buchmueller <pullmoll@t-online.de>
  *
  ****************************************************************************/
-import javax.sound.sampled.*;
 
 public class Sound implements Runnable {
     public final int VMIN = 0;
@@ -24,11 +23,11 @@ public class Sound implements Runnable {
     private final float C7 = 6.8e-6f;
     private final float C7_MAX = (VMAX * 551 / 500);
     private final float C7_MIN = (VMAX * 254 / 500);
-    private final float C7_DIFF = (C7_MAX - C7_MIN);
-    private final int R22 = 47000;
+//    private final float C7_DIFF = (C7_MAX - C7_MIN);
+//    private final int R22 = 47000;
     private final int R22pR24 = 19388;
     private final int R23 = 100000;
-    private final int R24 = 33000;
+//    private final int R24 = 33000;
     private final int R40 = 47000;
     private final int R41 = 100000;
     private final int R42 = 10000;
@@ -52,7 +51,7 @@ public class Sound implements Runnable {
     private int sound_latch_a;
     private int sound_latch_b;
 
-    private int channel;
+//    private int channel;
 
     private int tone1_vco1_cap;
     private int tone1_level;
@@ -97,18 +96,18 @@ public class Sound implements Runnable {
     private int nLowpass_polybit;
 
     private int sampleRate = 40000;
-    private int playback_freq = 40000;
+//    private int playback_freq = 40000;
     private int buffer_size = 20000;
     private byte[] buffer;
 
-    private int music_buffer_size = 20000;
-    private byte[] music_buffer;
+//    private int music_buffer_size = 20000;
+//    private byte[] music_buffer;
 
-    private Mixer mixer;
-    private SourceDataLine line;
-    private SourceDataLine musicLine;
+//    private Mixer mixer;
+//    private SourceDataLine line;
+//    private SourceDataLine musicLine;
 
-    private Thread thread;
+//    private Thread thread;
     private boolean running = true;
     private TMS36XX music;
 
@@ -133,36 +132,36 @@ public class Sound implements Runnable {
          * phoenix_sound_update); if ( channel == -1 ) return 1;
          */
 
-        Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
-        for (int i = 0; i < mixerInfo.length; i++) {
-            System.out.println(mixerInfo[i]);
-        }
-        this.mixer = AudioSystem.getMixer(mixerInfo[0]);
-
-        this.buffer = new byte[buffer_size];
-        this.music_buffer = new byte[music_buffer_size];
-
-        AudioFormat format = new AudioFormat(AudioFormat.Encoding.PCM_UNSIGNED, (float) playback_freq, 8, 1, 1, playback_freq, true);
-
-        DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
-        thread = new Thread(this, "TIA");
-        thread.start();
-        if (!AudioSystem.isLineSupported(info)) {
-            System.out.println("DataLine not supported in this AudioSystem:" + info);
-        }
-
-        try {
-            // line = (SourceDataLine) AudioSystem.getLine(info);
-            line = (SourceDataLine) mixer.getLine(info);
-            musicLine = (SourceDataLine) mixer.getLine(info);
-            line.open(format, buffer_size);
-            line.start();
-            musicLine.open(format, buffer_size);
-            musicLine.start();
-            music = new TMS36XX(musicLine, music_buffer);
-        } catch (LineUnavailableException e) {
-            System.out.println("DataLine not available.");
-        }
+//        Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
+//        for (int i = 0; i < mixerInfo.length; i++) {
+//            System.out.println(mixerInfo[i]);
+//        }
+//        this.mixer = AudioSystem.getMixer(mixerInfo[0]);
+//
+//        this.buffer = new byte[buffer_size];
+//        this.music_buffer = new byte[music_buffer_size];
+//
+//        AudioFormat format = new AudioFormat(AudioFormat.Encoding.PCM_UNSIGNED, (float) playback_freq, 8, 1, 1, playback_freq, true);
+//
+//        DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
+//        thread = new Thread(this, "TIA");
+//        thread.start();
+//        if (!AudioSystem.isLineSupported(info)) {
+//            System.out.println("DataLine not supported in this AudioSystem:" + info);
+//        }
+//
+//        try {
+//            // line = (SourceDataLine) AudioSystem.getLine(info);
+//            line = (SourceDataLine) mixer.getLine(info);
+//            musicLine = (SourceDataLine) mixer.getLine(info);
+//            line.open(format, buffer_size);
+//            line.start();
+//            musicLine.open(format, buffer_size);
+//            musicLine.start();
+//            music = new TMS36XX(musicLine, music_buffer);
+//        } catch (LineUnavailableException e) {
+//            System.out.println("DataLine not available.");
+//        }
 
     }
 
@@ -458,12 +457,12 @@ public class Sound implements Runnable {
     public void run() {
         while (running) {
             process(buffer, buffer_size);
-            line.write(buffer, 0, buffer_size);
+//            line.write(buffer, 0, buffer_size);
         }
-        line.drain();
-        line.stop();
-        line.close();
-        line = null;
+//        line.drain();
+//        line.stop();
+//        line.close();
+//        line = null;
     }
 
     public void stop() {

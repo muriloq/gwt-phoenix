@@ -1,10 +1,9 @@
 package com.muriloq.gwt.phoenix.client;
-import javax.sound.sampled.*;
 
 public class TMS36XX implements Runnable {
     private byte[] buffer;
-    private SourceDataLine line;
-    private Thread thread;
+//     private SourceDataLine line;
+//     private Thread thread;
     private boolean running=true;
 
     public static final boolean VERBOSE=true;
@@ -425,7 +424,7 @@ public class TMS36XX implements Runnable {
 
         /* play a single note from 'tune 4', a list of the 13 tones */
         reset_counters();
-        octave = octave;
+        this.octave = octave;
         tune_num = 4;
         tune_ofs = note;
         tune_max = note + 1;
@@ -466,23 +465,23 @@ public class TMS36XX implements Runnable {
         //System.out.println(("%s\n", bits ? "" : " none"));
     }
 
-    public TMS36XX (SourceDataLine line, byte[] buffer) {
-        this.line = line;
-        this.buffer = buffer;
-        thread = new Thread(this,"Music");
-        thread.start();
-    }
-
-
+//    public TMS36XX (SourceDataLine line, byte[] buffer) {
+//        this.line = line;
+//        this.buffer = buffer;
+//        thread = new Thread(this,"Music");
+//        thread.start();
+//    }
+//
+//
     public void run() {
         while (running) {
             this.sound_update(buffer, buffer.length);
-            line.write(buffer,0,buffer.length);
+//            line.write(buffer,0,buffer.length);
         }
-        line.drain();
-        line.stop();
-        line.close();
-        line=null;
+//        line.drain();
+//        line.stop();
+//        line.close();
+//        line=null;
     }
 
 

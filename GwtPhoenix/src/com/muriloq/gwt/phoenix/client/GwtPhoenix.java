@@ -63,7 +63,7 @@ public class GwtPhoenix implements EntryPoint {
             public void onSuccess(byte[] result) {
 
                 phoenix.loadRoms(result);
-                // phoenix.initSFX(this);
+                phoenix.initSFX();
                 phoenix.decodeChars();
                 phoenix.hiload();
 
@@ -107,17 +107,16 @@ public class GwtPhoenix implements EntryPoint {
                                 
                                 phoenix.cycles = -phoenix.cyclesPerInterrupt;
                                 
-                                if (phoenix.getFramesPerSecond() > 60) {
-                                    int frameSkip = phoenix.getFrameSkip();
-                                    phoenix.setFrameSkip(frameSkip > 1 ? frameSkip -1 : 1);
+                                if (phoenix.isAutoFrameSkip()){
+                                    if (phoenix.getFramesPerSecond() > 60) {
+                                        int frameSkip = phoenix.getFrameSkip();
+                                        phoenix.setFrameSkip(frameSkip > 1 ? frameSkip -1 : 1);
+                                    } else if (phoenix.getFramesPerSecond() < 60) {
+                                        int frameSkip = phoenix.getFrameSkip();
+                                        phoenix.setFrameSkip(frameSkip < 5 ? frameSkip + 1 : 5);
+                                    } 
                                 }
-                                
-                                if (phoenix.getFramesPerSecond() < 60) {
-                                    int frameSkip = phoenix.getFrameSkip();
-                                    phoenix.setFrameSkip(frameSkip < 5 ? frameSkip + 1 : 5);
-                                }
-                                
-                                if (sleepTime > 0) {
+                                if (phoenix.isRealSpeed() && (sleepTime > 0)) {
                                     timer.schedule((int) sleepTime);
                                 } else {
                                     timer.schedule(1);

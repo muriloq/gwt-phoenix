@@ -12,7 +12,7 @@
   <inherits name='com.google.gwt.user.theme.dark.Dark'/>
 
   <!-- Other module inherits                                      -->
-  <!--  <inherits name='com.allen_sauer.gwt.voices.gwt-voices'/>  -->
+  <inherits name='com.allen_sauer.gwt.voices.gwt-voices'/>
   <!--  <inherits name='com.google.gwt.widgetideas.GWTCanvas'/>   -->
   <inherits name='gwt.g2d.g2d'/>
          

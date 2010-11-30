@@ -8,6 +8,8 @@ import gwt.g2d.client.graphics.Surface;
 import gwt.g2d.client.graphics.canvas.CanvasElement;
 import gwt.g2d.client.graphics.canvas.ImageDataAdapter;
 
+import com.allen_sauer.gwt.voices.client.Sound;
+import com.allen_sauer.gwt.voices.client.SoundController;
 import com.google.gwt.event.dom.client.KeyCodes;
 
 /*
@@ -95,11 +97,12 @@ public class Phoenix extends i8080 {
 	
     private Color characters[][]; // decoded characters, for each palette
 
-//    private AudioClip laserSFX = null;
-//    private AudioClip explosionSFX = null;
-//    private AudioClip blowSFX = null;
-//    private AudioClip shieldSFX = null;
-//    private AudioClip hitSFX = null;
+    private SoundController soundController = null; 
+    private Sound laserSFX = null;
+    private Sound explosionSFX = null;
+    private Sound blowSFX = null;
+    private Sound shieldSFX = null;
+    private Sound hitSFX = null;
     private int savedHiScore=0;
 
     public static final int WIDTH_PIXELS = 208;
@@ -122,6 +125,10 @@ public class Phoenix extends i8080 {
     
     private int[] gameControl = new int [8];
     private int interruptCounter = 0;
+    
+    private boolean autoFrameSkip=true;
+    private boolean realSpeed=true;
+    private boolean mute=true;
     private int frameSkip = 1;
     public  long timeOfLastFrameInterrupt = 0;
     private long  timeNow;
@@ -240,26 +247,30 @@ public class Phoenix extends i8080 {
             palette = newByte & 0x01; 
         }
         
-//        if ( addr >= 0x6000 && addr <= 0x63ff && sound!=null) {
-//            if ( peekb(addr)!=newByte ) {
-//                mem[addr] = newByte;
-//                //System.out.println ("Sound Control A:"+newByte);
-//                //sound.updateControlA((byte)newByte);
-//                if ( newByte==143 ) explosionSFX.play ();
-//                if ( (newByte>101)&&(newByte<107) ) laserSFX.play ();
-//                if ( newByte==80 ) blowSFX.play ();
-//            }
-//        }
+        if ( addr >= 0x6000 && addr <= 0x63ff) {
+            if ( peekb(addr)!=newByte ) {
+                mem[addr] = newByte;
+                // sound.updateControlA((byte)newByte);
+                if (!isMute()) {
+                    if ( newByte==143 ) explosionSFX.play ();
+                    if ( (newByte>101)&&(newByte<107) ) laserSFX.play ();
+                    if ( newByte==80 ) blowSFX.play ();
+                }
+                // canvasGraphics.setFocus(true);
+            }
+        }
 
-//        if ( addr >= 0x6800 && addr <= 0x6bff && sound!=null ) {
-//            if ( peekb(addr)!=newByte ) {
-//                mem[ addr ] = newByte;
-//                //System.out.println ("Sound Control B:"+newByte);  
-//                sound.updateControlB((byte) newByte);
-//                if ( newByte==12 ) shieldSFX.play ();
-//                if ( newByte==2 ) hitSFX.play ();
-//            }
-//        }
+        if ( addr >= 0x6800 && addr <= 0x6bff) {
+            if ( peekb(addr)!=newByte ) {
+                mem[ addr ] = newByte;
+                // sound.updateControlB((byte) newByte);
+                if (!isMute()){
+                    if ( newByte==12 ) shieldSFX.play ();
+                    if ( newByte==2 ) hitSFX.play ();
+                }
+                // canvasGraphics.setFocus(true);
+            }
+        }
 
         // Hi Score Saving - Thanks MAME ! :)
         if ( addr == 0x438c ) {
@@ -325,31 +336,31 @@ public class Phoenix extends i8080 {
     }
 
     
-//    public void initSFX(Applet a) {
-//        // Sound Effects loading
-//        applet = a;
-//        URL baseURL = applet.getDocumentBase();
-//        laserSFX = applet.getAudioClip(baseURL,"laser.au");
-//        laserSFX.play();
-//        laserSFX.stop();
-//
-//        explosionSFX = applet.getAudioClip(baseURL,"explo.au");
-//        explosionSFX.play();
-//        explosionSFX.stop();
-//
-//        blowSFX = applet.getAudioClip(baseURL,"blow.au");
-//        blowSFX.play();
-//        blowSFX.stop();
-//
-//        shieldSFX = applet.getAudioClip(baseURL,"shield.au");
-//        shieldSFX.play();
-//        shieldSFX.stop();
-//
-//        hitSFX = applet.getAudioClip(baseURL,"hit.au");
-//        hitSFX.play();
-//        hitSFX.stop();
-//
-//    }
+    public void initSFX() {
+        // Sound Effects loading
+        
+        soundController = new SoundController();
+        laserSFX = soundController.createSound(Sound.MIME_TYPE_AUDIO_BASIC, "laser.ogg");
+        laserSFX.play();
+        laserSFX.stop();
+
+        explosionSFX = soundController.createSound(Sound.MIME_TYPE_AUDIO_BASIC, "explo.ogg"); 
+        explosionSFX.play();
+        explosionSFX.stop();
+
+        blowSFX = soundController.createSound(Sound.MIME_TYPE_AUDIO_BASIC, "blow.ogg");
+        blowSFX.play();
+        blowSFX.stop();
+
+        shieldSFX = soundController.createSound(Sound.MIME_TYPE_AUDIO_BASIC, "shield.ogg"); 
+        shieldSFX.play();
+        shieldSFX.stop();
+
+        hitSFX = soundController.createSound(Sound.MIME_TYPE_AUDIO_BASIC, "hit.ogg");
+        hitSFX.play();
+        hitSFX.stop();
+
+    }
 
     // The Hi Score is BCD (Binary Coded Decimal).
     // We convert this to integer here.
@@ -451,7 +462,7 @@ public class Phoenix extends i8080 {
         vBlank = true;
 
         if (interruptCounter % getFrameSkip() == 0)
-            screenRefresh();
+            refreshScreen();
 
         // Update speed indicator every second
         if ((interruptCounter % 60) == 0) {
@@ -465,7 +476,7 @@ public class Phoenix extends i8080 {
     }
 
 
-    public void screenRefresh () {
+    public void refreshScreen () {
         if ( (!backgroundRefresh && !foregroundRefresh) && !scrollRefresh) return; 
         
         if (backgroundRefresh) {
@@ -517,16 +528,26 @@ public class Phoenix extends i8080 {
         
         canvasGraphics.setFillStyle(DKYELLOW);
         canvasGraphics.fillText(Integer.toString((int)framesPerSecond),0,255);
-        if (getFrameSkip() != 1){
-            canvasGraphics.setFillStyle(GREEN);
+        
+        canvasGraphics.setFillStyle(GREEN);
+        if (!isRealSpeed())
+            canvasGraphics.fillText("S",WIDTH-24,255);
+        
+        if ( (isAutoFrameSkip()) && (getFrameSkip()!=1) )
+            canvasGraphics.fillText("A",WIDTH-32,255);
+
+        if (isMute())
+            canvasGraphics.fillText("M",WIDTH-48,255);
+
+        if (getFrameSkip() != 1)
             canvasGraphics.fillText(Integer.toString((int)getFrameSkip()),WIDTH-16,255);
-        }
+        
     }
 
     public void decodeChars () {
         characters = new Color[2][512*64];
 
-        for ( int s=0;s<2;s++ ) {             // Charset
+        for ( int s=0;s<2;s++ ) {               // Charset
             for ( int c=0;c<256;c++ ) {         // Character
                 byte[][] block = new byte[8][8];
                 for ( int plane=0; plane<2;plane++ ) {  // Bit plane
@@ -581,15 +602,19 @@ public class Phoenix extends i8080 {
         case '3':  	gameControl[0]=1-down;    break; // Coin
         case '1':  	gameControl[1]=1-down;    break; // Start 1
         case '2':  	gameControl[2]=1-down;    break; // Start 2
-        case 32 :  	gameControl[4]=1-down;    break; // Fire 
-        case KeyCodes.KEY_RIGHT:   gameControl[5]=1-down;   break; // Right
-        case KeyCodes.KEY_LEFT:   	 gameControl[6]=1-down;  break; // Left
-        case KeyCodes.KEY_DOWN:   gameControl[7]=1-down;    break; // Barrier
+        case 32 :  	gameControl[4]=1-down;    break; // Fire
+        case 'a': case 'A': if (down==0) this.autoFrameSkip = !autoFrameSkip; break;   // toggle auto frame skip
+        case 's': case 'S': if (down==0) this.realSpeed = !realSpeed; break;   // toggle speed limiter
+        case 'm': case 'M': if (down==0) this.mute = !mute; break;   // toggle speed limiter
+        case KeyCodes.KEY_RIGHT:   gameControl[5]=1-down;   break;   // Right
+        case KeyCodes.KEY_LEFT:   	 gameControl[6]=1-down;  break;  // Left
+        case KeyCodes.KEY_DOWN:   gameControl[7]=1-down;    break;  // Barrier
         case KeyCodes.KEY_PAGEDOWN:  setFrameSkip(getFrameSkip() - down); 
             if ( getFrameSkip() < 1 ) setFrameSkip(1);             // Decrease frame skip
             break;
         case KeyCodes.KEY_PAGEUP:  setFrameSkip(getFrameSkip() + down);       // Increase frame skip
             break;
+          
         }
         return true;
     }
@@ -609,6 +634,36 @@ public class Phoenix extends i8080 {
 
     public float getFramesPerSecond() {
         return framesPerSecond;
+    }
+
+
+    public void setAutoFrameSkip(boolean autoFrameSkip) {
+        this.autoFrameSkip = autoFrameSkip;
+    }
+
+
+    public boolean isAutoFrameSkip() {
+        return autoFrameSkip;
+    }
+
+
+    public void setRealSpeed(boolean realSpeed) {
+        this.realSpeed = realSpeed;
+    }
+
+
+    public boolean isRealSpeed() {
+        return realSpeed;
+    }
+
+
+    public void setMute(boolean mute) {
+        this.mute = mute;
+    }
+
+
+    public boolean isMute() {
+        return mute;
     }
 	
 }
